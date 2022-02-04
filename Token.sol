@@ -4,6 +4,8 @@ pragma solidity 0.8.11;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+// revisar ghost inu para fee que convierte a eth y va para un wallet
+
 contract MyERC20 is ERC20, Ownable {
     address public minter = 0x0000000000000000000000000000000000000000;
 
