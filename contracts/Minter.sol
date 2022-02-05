@@ -25,10 +25,14 @@ contract Minter {
     mapping(uint => uint256) public checkpoints;
     mapping(uint => bool) public is_registered;
 
+    // Internal
+
     function setCheckpoint(uint token_id) internal
     {
         checkpoints[token_id] = block.number;
     }
+
+    // NFT contract
 
     function register(uint token_id) public
     {
@@ -37,6 +41,8 @@ contract Minter {
         setCheckpoint(token_id);
     }
 
+    // Public
+
     function claim(uint token_id) public
     {
         require(nft_contract.ownerOf(token_id) == msg.sender, "Must be token owner");
@@ -44,6 +50,8 @@ contract Minter {
         token_contract.mintReward(msg.sender, reward);
         setCheckpoint(token_id);
     }
+
+    // View
 
     function calculateReward(uint token_id) public view returns(uint256)
     {

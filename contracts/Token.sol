@@ -9,13 +9,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MyERC20 is ERC20, Ownable {
     address public minter = 0x0000000000000000000000000000000000000000;
 
-    constructor () ERC20("My Token", "TKN") {
+    constructor() ERC20("My Token", "TKN") {
     }
 
-    function setMinter(address new_minter) public onlyOwner
+    // Admin
+
+    function setMinter(address minter_address) public onlyOwner
     {
-        minter = new_minter;
+        minter = minter_address;
     }
+
+    // Minter contract
 
     function mintReward(address beneficiary, uint amount) public
     {

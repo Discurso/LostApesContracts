@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <p id="web3_message"></p>
+  <p id="general_info"></p>
+  <div id="claim_buttons"></div>
+  <h2>NFT contract</h2>
+  <input type="input"  value="" id="nft_addresses"></input>
+  <input type="input"  value="" id="nft_amounts"></input>
+  <input type="button" value="Edit whitelist reserved" onclick="_NFTEditWhitelistReserved()"></input>
+  <br>
+  <input type="button" value="Enable Whitelist" onclick="_NFTEnableWhitelist()"></input>
+  <input type="button" value="Disable Whitelist" onclick="_NFTDisableWhitelist()"></input>
+  <br>
+  <input type="button" value="Enable Sale" onclick="_NFTEnableSale()"></input>
+  <input type="button" value="Disable Sale" onclick="_NFTDisableSale()"></input>
+  <br>
+  <input type="input"  value="" id="nft_base_uri"></input>
+  <input type="button" value="Set base uri" onclick="_NFTSetBaseURI()"></input>
+  <br>
+  <input type="input"  value="" id="nft_price"></input>
+  <input type="button" value="Set price" onclick="_NFTSetPrice()"></input>
+  <br>
+  <input type="input"  value="" id="nft_minter_address"></input>
+  <input type="button" value="Set minter" onclick="_NFTSetMinter()"></input>
+  <br>
+  <h2>Token contract</h2>
+  <input type="input"  value="" id="token_minter_address"></input>
+  <input type="button" value="Set minter" onclick="_tokenSetMinter()"></input>
+  <br>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
+  <script type="text/javascript" src="blockchain_stuff.js"></script>
+</body>
+</html>
+
+<script>
+  function _NFTEditWhitelistReserved()
+  {
+    addresses = document.getElementById("nft_addresses").value
+    amounts = document.getElementById("nft_amounts").value
+    NFTEditWhitelistReserved(addresses, amounts)
+  }
+
+  function _NFTEnableWhitelist()
+  {
+    NFTSetWhitelistActive(true)
+  }
+
+  function _NFTDisableWhitelist()
+  {
+    NFTSetWhitelistActive(false)
+  }
+
+  function _NFTEnableSale()
+  {
+    NFTSetSaleActive(true)
+  }
+
+  function _NFTDisableSale()
+  {
+    NFTSetSaleActive(false)
+  }
+
+  function _NFTSetBaseURI()
+  {
+    base_uri = document.getElementById("nft_base_uri").value
+    NFTSetBaseURI(base_uri)
+  }
+
+  function _NFTSetPrice()
+  {
+    price = document.getElementById("nft_price").value
+    NFTSetPrice(price)
+  }
+
+  function _NFTSetMinter()
+  {
+    address = document.getElementById("nft_minter_address").value
+    NFTSetMinter(address)
+  }
+
+  function _tokenSetMinter()
+  {
+    address = document.getElementById("token_minter_address").value
+    tokenSetMinter(address)
+  }
+</script>
