@@ -90,6 +90,13 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "claimAll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -113,7 +120,7 @@
 		"name": "nft_contract",
 		"outputs": [
 			{
-				"internalType": "contract ERC721",
+				"internalType": "contract NFTCollection",
 				"name": "",
 				"type": "address"
 			}

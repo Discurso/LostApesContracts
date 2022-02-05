@@ -10,17 +10,24 @@ contract MyToken {
     }
 }
 
+contract NFTCollection {  
+    function tokensOfOwner(address addr) public view returns(uint256[] memory) {
+    }
+    function ownerOf(uint256 tokenId) public view returns (address) {
+    }
+}
+
 // estiable el token
 // editable el reward per block
 
 contract Minter {
-    address public TOKEN_CONTRACT_ADDRESS = 0x5f46CaE7058417A548B85432FBD1B1a1F3e40170;
-    address public NFT_CONTRACT_ADDRESS = 0x214EDd4756b97000f09121bCaFAdb7498Fa8ED0C;
+    address public TOKEN_CONTRACT_ADDRESS = 0x5e63799Ea51fF3eD5D13155c43f05dDeb5e6f1C9;
+    address public NFT_CONTRACT_ADDRESS = 0xeac3D1D061EB851C631CFEfC6268CFe710A9A2b1;
 
     uint public REWARD_PER_BLOCK = 0.1 ether;
 
     MyToken public token_contract = MyToken(TOKEN_CONTRACT_ADDRESS);
-    ERC721 public nft_contract = ERC721(NFT_CONTRACT_ADDRESS);
+    NFTCollection public nft_contract = NFTCollection(NFT_CONTRACT_ADDRESS);
 
     mapping(uint => uint256) public checkpoints;
     mapping(uint => bool) public is_registered;
@@ -49,6 +56,15 @@ contract Minter {
         uint256 reward = calculateReward(token_id);
         token_contract.mintReward(msg.sender, reward);
         setCheckpoint(token_id);
+    }
+
+    function claimAll() public
+    {
+        uint256[] memory sender_tokens = nft_contract.tokensOfOwner(msg.sender);
+        for(uint i=0; i<sender_tokens.length; i++)
+        {
+            claim(sender_tokens[i]);
+        }
     }
 
     // View

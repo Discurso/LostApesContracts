@@ -1,6 +1,6 @@
 const NETWORK_ID = 4
 
-const MINTER_CONTRACT_ADDRESS = "0x2aD1AB43436502Ea6693F1509170d11065669cdf"
+const MINTER_CONTRACT_ADDRESS = "0x60615786173872667dBCD7709dE586010aF2712B"
 const NFT_CONTRACT_ADDRESS = "0xeac3D1D061EB851C631CFEfC6268CFe710A9A2b1"
 const TOKEN_CONTRACT_ADDRESS = "0x5e63799Ea51fF3eD5D13155c43f05dDeb5e6f1C9"
 const MINTER_CONTRACT_ABI_PATH = "./json_abi/Minter.json"
@@ -12,7 +12,7 @@ var token_contract
 
 var accounts
 var web3
-var ENTRY_PRICE
+var NFT_PRICE
 
 function metamaskReloadCallback() {
   window.ethereum.on('accountsChanged', (accounts) => {
@@ -93,9 +93,43 @@ loadDapp()
 
 const onContractInitCallback = async () => {
   token_balance = await token_contract.methods.balanceOf(accounts[0]).call()
-  xxx = await nft_contract.methods.ownerOf(0).call()
-  console.log(token_balance)
-  console.log(xxx)
+  NFT_PRICE = await nft_contract.methods.price().call()
+  SALE_ACTIVE = await nft_contract.methods.saleActive().call()
+  WHITELIST_ACTIVE = await nft_contract.methods.whitelistActive().call()
+  MAX_SUPPLY = await nft_contract.methods.MAX_SUPPLY().call()
+  MAX_MINT_PER_TX = await nft_contract.methods.MAX_MINT_PER_TX().call()
+  BASE_TOKEN_URI = await nft_contract.methods.baseTokenURI().call()
+  USER_WHITELIST_RESERVE = await nft_contract.methods.whitelistReserved(accounts[0]).call()
+  OWNER_ADDRESS = await nft_contract.methods.owner().call()
+  MINTER_TOKEN_ADDRESS = await minter_contract.methods.TOKEN_CONTRACT_ADDRESS().call()
+  MINTER_NFT_ADDRESS = await minter_contract.methods.NFT_CONTRACT_ADDRESS().call()
+  USER_TOKEN_IDS = await nft_contract.methods.tokensOfOwner(accounts[0]).call()
+  ERC20_TOKEN_BALANCE = await token_contract.methods.balanceOf(accounts[0]).call()
+
+  USER_TOKEN_CLAIMABLES = []
+
+  for(var i=0; i<USER_TOKEN_IDS.length; i++)
+  {
+    claimable_amount = await minter_contract.methods.calculateReward(i).call()
+    USER_TOKEN_CLAIMABLES.push(web3.utils.fromWei(claimable_amount))
+  }
+
+  var contract_state_str = ""
+    + "NFT Price: " + web3.utils.fromWei(NFT_PRICE) + "<br>"
+    + "Sale active: " + SALE_ACTIVE + "<br>"
+    + "Whitelist active: " + WHITELIST_ACTIVE + "<br>"
+    + "Max supply: " + MAX_SUPPLY + "<br>"
+    + "Max mint per tx: " + MAX_MINT_PER_TX + "<br>"
+    + "Base token URI: " + BASE_TOKEN_URI + "<br>"
+    + "User Whitelist Reserve: " + USER_WHITELIST_RESERVE + "<br>"
+    + "Owner: " + OWNER_ADDRESS + "<br>"
+    + "Token address: " + MINTER_TOKEN_ADDRESS + "<br>"
+    + "NFT address: " + MINTER_NFT_ADDRESS + "<br>"
+    + "Your tokens: " + USER_TOKEN_IDS + "<br>"
+    + "Claimable amounts: " + USER_TOKEN_CLAIMABLES + "<br>"
+    + "ERC20 Balance: " + web3.utils.fromWei(ERC20_TOKEN_BALANCE) + "<br>"
+  
+  document.getElementById("contract_state").innerHTML = contract_state_str
 }
 
 
@@ -114,13 +148,26 @@ const minterClaim = async (token_id) => {
   });
 }
 
+const minterClaimAll = async () => {
+  const result = await minter_contract.methods.claimAll()
+  .send({ from: accounts[0], gas: 0, value: 0 })
+  .on('transactionHash', function(hash){
+    document.getElementById("web3_message").textContent="Claiming all...";
+  })
+  .on('receipt', function(receipt){
+    document.getElementById("web3_message").textContent="Success.";    })
+  .catch((revertReason) => {
+    console.log("ERROR! Transaction reverted: " + revertReason.receipt.transactionHash)
+  });
+}
+
 //// NFT ////
 
 const NFTMintWhitelist = async (amount) => {
   const result = await nft_contract.methods.mintWhitelist(amount)
   .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Minting whitelist...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -133,7 +180,7 @@ const NFTMint = async (amount) => {
   const result = await nft_contract.methods.mint(amount)
   .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Minting...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -144,9 +191,9 @@ const NFTMint = async (amount) => {
 
 const NFTEditWhitelistReserved = async (addresses, amounts) => {
   const result = await nft_contract.methods.editWhitelistReserved(addresses, amounts)
-  .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
+  .send({ from: accounts[0], gas: 0, value: 0 })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Editign whitelist...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -157,9 +204,9 @@ const NFTEditWhitelistReserved = async (addresses, amounts) => {
 
 const NFTSetWhitelistActive = async (value) => {
   const result = await nft_contract.methods.setWhitelistActive(value)
-  .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
+  .send({ from: accounts[0], gas: 0, value: 0 })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Setting whitelist active...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -170,9 +217,9 @@ const NFTSetWhitelistActive = async (value) => {
 
 const NFTSetSaleActive = async (value) => {
   const result = await nft_contract.methods.setSaleActive(value)
-  .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
+  .send({ from: accounts[0], gas: 0, value: 0 })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Setting sale active...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -183,9 +230,9 @@ const NFTSetSaleActive = async (value) => {
 
 const NFTSetBaseURI = async (base_uri) => {
   const result = await nft_contract.methods.setBaseURI(base_uri)
-  .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
+  .send({ from: accounts[0], gas: 0, value: 0 })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Setting base URI...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })
@@ -196,9 +243,9 @@ const NFTSetBaseURI = async (base_uri) => {
 
 const NFTSetPrice = async (price) => {
   const result = await nft_contract.methods.setPrice(price)
-  .send({ from: accounts[0], gas: 0, value: NFT_PRICE * amount })
+  .send({ from: accounts[0], gas: 0, value: 0 })
   .on('transactionHash', function(hash){
-    document.getElementById("web3_message").textContent="Setting minter...";
+    document.getElementById("web3_message").textContent="Setting price...";
   })
   .on('receipt', function(receipt){
     document.getElementById("web3_message").textContent="Success.";    })

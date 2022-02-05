@@ -5,6 +5,7 @@
 </head>
 <body>
   <p id="web3_message"></p>
+  <p id="contract_state"></p>
   <p id="general_info"></p>
   <div id="claim_buttons"></div>
   <h2>NFT contract</h2>
@@ -73,7 +74,7 @@
   function _NFTSetPrice()
   {
     price = document.getElementById("nft_price").value
-    NFTSetPrice(price)
+    NFTSetPrice(web3.utils.toWei(price))
   }
 
   function _NFTSetMinter()
