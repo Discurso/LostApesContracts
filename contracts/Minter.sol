@@ -37,7 +37,7 @@ contract Minter {
         setCheckpoint(token_id);
     }
 
-    function collect(uint token_id) public
+    function claim(uint token_id) public
     {
         require(nft_contract.ownerOf(token_id) == msg.sender, "Must be token owner");
         uint256 reward = calculateReward(token_id);
