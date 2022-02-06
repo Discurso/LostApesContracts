@@ -14,8 +14,8 @@ contract MyToken {
 // editable el reward per block
 
 contract Minter {
-    address public TOKEN_CONTRACT_ADDRESS = 0x5f46CaE7058417A548B85432FBD1B1a1F3e40170;
-    address public NFT_CONTRACT_ADDRESS = 0x214EDd4756b97000f09121bCaFAdb7498Fa8ED0C;
+    address public NFT_CONTRACT_ADDRESS = 0x895E3C0C85A7593f5b4c993de546206ea1C75F52;
+    address public TOKEN_CONTRACT_ADDRESS = 0x28FB2D8E2B652058e4Bc4377fA4Cb7f707eDa9dc;
 
     uint public REWARD_PER_BLOCK = 0.1 ether;
 

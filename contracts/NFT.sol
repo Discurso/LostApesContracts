@@ -35,11 +35,6 @@ contract NFTCollection is ERC721Enumerable, Ownable {
     // The base link that leads to the image / video of the token
     string public baseTokenURI = "https://api.funkycrocs.io/";
 
-    // Team addresses for withdrawals
-    address public a1;
-    address public a2;
-    address public a3;
-
     // List of addresses that have a number of reserved tokens for whitelist
     mapping (address => uint256) public whitelistReserved;
 
@@ -118,19 +113,11 @@ contract NFTCollection is ERC721Enumerable, Ownable {
         price = newPrice;
     }
 
-    // Set team addresses TODO
-    function setAddresses(address[] memory _a) public onlyOwner {
-        a1 = _a[0];
-        a2 = _a[1];
-        a3 = _a[2];
-    }
-
-    // Withdraw funds from contract for the team TODO
-    function withdrawTeam(uint256 amount) public payable onlyOwner {
-        uint256 percent = amount / 100;
-        require(payable(a1).send(percent * 40));
-        require(payable(a2).send(percent * 30));
-        require(payable(a3).send(percent * 30));
+    function withdrawETH() public onlyOwner
+    {
+        (bool sent, bytes memory data) = address(owner()).call{value: address(this).balance}("");
+        require(sent, "Failed to send Ether");
+        data;
     }
 
     // Set Minter contract address
