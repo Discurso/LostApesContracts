@@ -5,6 +5,7 @@
 </head>
 <body>
   <p id="web3_message"></p>
+  <p id="contract_state"></p>
   <p id="general_info"></p>
   <div id="claim_buttons"></div>
   <h2>NFT contract</h2>
@@ -27,9 +28,24 @@
   <input type="input"  value="" id="nft_minter_address"></input>
   <input type="button" value="Set minter" onclick="_NFTSetMinter()"></input>
   <br>
+  <input type="button" value="Withdraw eth" onclick="_NFTWithdrawETH()"></input>
+  <br>
   <h2>Token contract</h2>
   <input type="input"  value="" id="token_minter_address"></input>
   <input type="button" value="Set minter" onclick="_tokenSetMinter()"></input>
+  <br>
+  <h2>Minter contract</h2>
+  <input type="button" value="Enable Claim" onclick="_minterEnableClaim()"></input>
+  <input type="button" value="Disable Claim" onclick="_minterDisableClaim()"></input>
+  <br>
+  <input type="input"  value="" id="minter_reward_per_block"></input>
+  <input type="button" value="Set reward per block" onclick="_minterSetRewardPerBlock()"></input>
+  <br>
+  <input type="input"  value="" id="minter_nft_contract_address"></input>
+  <input type="button" value="Set NFT Contract" onclick="_minterSetNFTContract()"></input>
+  <br>
+  <input type="input"  value="" id="minter_token_contract_address"></input>
+  <input type="button" value="Set Token Contract" onclick="_minterSetTokenContract()"></input>
   <br>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.5/web3.min.js"></script>
   <script type="text/javascript" src="blockchain_stuff.js"></script>
@@ -37,6 +53,7 @@
 </html>
 
 <script>
+  // NFT
   function _NFTEditWhitelistReserved()
   {
     addresses = document.getElementById("nft_addresses").value
@@ -73,7 +90,7 @@
   function _NFTSetPrice()
   {
     price = document.getElementById("nft_price").value
-    NFTSetPrice(price)
+    NFTSetPrice(web3.utils.toWei(price))
   }
 
   function _NFTSetMinter()
@@ -82,9 +99,44 @@
     NFTSetMinter(address)
   }
 
+  function _NFTWithdrawETH()
+  {
+    NFTWithdrawETH()
+  }
+
+  // Token
   function _tokenSetMinter()
   {
     address = document.getElementById("token_minter_address").value
     tokenSetMinter(address)
+  }
+
+  // Minter
+  function _minterEnableClaim()
+  {
+    minterSetClaimActive(true)
+  }
+
+  function _minterDisableClaim()
+  {
+    minterSetClaimActive(false)
+  }
+
+  function _minterSetRewardPerBlock()
+  {
+    amount = document.getElementById("minter_reward_per_block").value
+    minterSetRewardPerBlock(web3.utils.toWei(amount))
+  }
+
+  function _minterSetNFTContract()
+  {
+    address = document.getElementById("minter_nft_contract_address").value
+    minterSetNFTContract(address)
+  }
+
+  function _minterSetTokenContract()
+  {
+    address = document.getElementById("minter_token_contract_address").value
+    minterSetTokenContract(address)
   }
 </script>

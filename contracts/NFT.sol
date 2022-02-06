@@ -5,8 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// whitelist
-// se cobra en eth
+// whitelist (done)
+// se cobra en eth (done)
+// un solo address para withdrawal (done)
 
 contract Minter {
     function register(uint token_id) public
