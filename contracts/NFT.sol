@@ -35,7 +35,7 @@ contract NFTCollection is ERC721Enumerable, Ownable {
     // List of addresses that have a number of reserved tokens for whitelist
     mapping (address => uint256) public whitelistReserved;
 
-    constructor () ERC721 ("Funky Crocs", "FNK") {
+    constructor () ERC721 ("My NFT", "MNFT") {
         price = initial_price;
     }
 
