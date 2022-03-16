@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.11;
+pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
@@ -31,7 +31,7 @@ contract NFTCollection is ERC721Enumerable, Ownable {
 
     // Maximum limit of tokens that can ever exist
     uint256 public constant MAX_SUPPLY = 10000;
-    uint256 public constant MAX_MINT_PER_TX = 20;
+    uint256 public constant MAX_MINT_PER_WALLET = 4;
 
     // The base link that leads to the image / video of the token
     string public baseTokenURI = "https://api.funkycrocs.io/";
@@ -77,10 +77,10 @@ contract NFTCollection is ERC721Enumerable, Ownable {
     // Standard mint function
     function mint(uint256 _amount) public payable {
         uint256 supply = totalSupply();
-        require( saleActive,                                "Sale isn't active" );
-        require( _amount > 0 && _amount <= MAX_MINT_PER_TX, "Can only mint between 1 and 10 tokens at once" );
-        require( supply + _amount <= MAX_SUPPLY,            "Can't mint more than max supply" );
-        require( msg.value == price * _amount,              "Wrong amount of ETH sent" );
+        require( saleActive, "Sale isn't active" );
+        require( balanceOf(msg.sender) + _amount <= MAX_MINT_PER_WALLET, "Max mint per wallet exceeded!");
+        require( supply + _amount <= MAX_SUPPLY, "Can't mint more than max supply" );
+        require( msg.value == price * _amount, "Wrong amount of ETH sent" );
         for(uint256 i; i < _amount; i++){
             _safeMint( msg.sender, supply + i );
             minter.register(supply + i);
