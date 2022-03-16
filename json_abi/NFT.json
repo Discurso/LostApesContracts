@@ -100,7 +100,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "MAX_MINT_PER_TX",
+		"name": "MAX_MINT_PER_WALLET",
 		"outputs": [
 			{
 				"internalType": "uint256",
