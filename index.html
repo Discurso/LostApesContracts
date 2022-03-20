@@ -4,8 +4,11 @@
   <meta charset="utf-8">
 </head>
 <body>
+  <input id="connect_button" type="button" value="Connect" onclick="connectWallet()" style="display: none"></input>
+  <p id="account_address" style="display: none"></p>
   <p id="web3_message"></p>
   <p id="contract_state"></p>
+  <p id="account_state"></p>
   <div id="claim_buttons"></div>
   <input type="input"  value="1" id="nft_mint_amount"></input>
   <input type="button" value="Mint" onclick="_NFTMint()"></input>

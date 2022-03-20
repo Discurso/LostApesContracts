@@ -1,8 +1,8 @@
 const NETWORK_ID = 4
 
-const NFT_CONTRACT_ADDRESS = "0x9d095636C8489E8Bdd0f87F1f158093715c8FbD5"
-const TOKEN_CONTRACT_ADDRESS = "0xB53334ba104A546A293bFE30947562eDA31389e1"
-const MINTER_CONTRACT_ADDRESS = "0x7285E14f130C1F05A5f4b65065d89305DBf5265a"
+const NFT_CONTRACT_ADDRESS = "0x002cc85C772b8719417B88Ae2dFB64EcD4995648"
+const TOKEN_CONTRACT_ADDRESS = "0xA93dFeBB543972C9a8241b0E71dE3a7290101807"
+const MINTER_CONTRACT_ADDRESS = "0xbEdB996F47e7C6667a671496E5C7c5A1d719FDB1"
 const NFT_CONTRACT_ABI_PATH = "./json_abi/NFT.json"
 const TOKEN_CONTRACT_ABI_PATH = "./json_abi/Token.json"
 const MINTER_CONTRACT_ABI_PATH = "./json_abi/Minter.json"
@@ -75,10 +75,22 @@ async function loadDapp() {
           minter_contract = await getContract(web3, MINTER_CONTRACT_ADDRESS, MINTER_CONTRACT_ABI_PATH)
           nft_contract = await getContract(web3, NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI_PATH)
           token_contract = await getContract(web3, TOKEN_CONTRACT_ADDRESS, TOKEN_CONTRACT_ABI_PATH)
-          await window.ethereum.request({ method: "eth_requestAccounts" })
-          accounts = await web3.eth.getAccounts()
           document.getElementById("web3_message").textContent="You are connected to Metamask"
           onContractInitCallback()
+          web3.eth.getAccounts(function(err, _accounts){
+            accounts = _accounts
+            if (err != null)
+            {
+              console.error("An error occurred: "+err)
+            } else if (accounts.length > 0)
+            {
+              onWalletConnected()
+              document.getElementById("account_address").style.display = "block"
+            } else
+            {
+              document.getElementById("connect_button").style.display = "block"
+            }
+          });
         };
         awaitContract();
       } else {
@@ -89,21 +101,45 @@ async function loadDapp() {
   awaitWeb3();
 }
 
+async function connectWallet() {
+  await window.ethereum.request({ method: "eth_requestAccounts" })
+  accounts = await web3.eth.getAccounts()
+  onWalletConnected()
+}
+
 loadDapp()
 
 const onContractInitCallback = async () => {
-  token_balance = await token_contract.methods.balanceOf(accounts[0]).call()
   NFT_PRICE = await nft_contract.methods.price().call()
   SALE_ACTIVE = await nft_contract.methods.saleActive().call()
   WHITELIST_ACTIVE = await nft_contract.methods.whitelistActive().call()
   CLAIM_ACTIVE = await minter_contract.methods.claimActive().call()
   MAX_SUPPLY = await nft_contract.methods.MAX_SUPPLY().call()
-  MAX_MINT_PER_TX = await nft_contract.methods.MAX_MINT_PER_TX().call()
+  MAX_MINT_PER_TX = await nft_contract.methods.MAX_MINT_PER_WALLET().call()
   BASE_TOKEN_URI = await nft_contract.methods.baseTokenURI().call()
-  USER_WHITELIST_RESERVE = await nft_contract.methods.whitelistReserved(accounts[0]).call()
   OWNER_ADDRESS = await nft_contract.methods.owner().call()
   MINTER_TOKEN_ADDRESS = await minter_contract.methods.TOKEN_CONTRACT_ADDRESS().call()
   MINTER_NFT_ADDRESS = await minter_contract.methods.NFT_CONTRACT_ADDRESS().call()
+
+  var contract_state_str = ""
+    + "NFT Price: " + web3.utils.fromWei(NFT_PRICE) + "<br>"
+    + "Sale active: " + SALE_ACTIVE + "<br>"
+    + "Whitelist active: " + WHITELIST_ACTIVE + "<br>"
+    + "Claim active: " + CLAIM_ACTIVE + "<br>"
+    + "Max supply: " + MAX_SUPPLY + "<br>"
+    + "Max mint per tx: " + MAX_MINT_PER_TX + "<br>"
+    + "Base token URI: " + BASE_TOKEN_URI + "<br>"
+    + "Owner: " + OWNER_ADDRESS + "<br>"
+    + "Token address: " + MINTER_TOKEN_ADDRESS + "<br>"
+    + "NFT address: " + MINTER_NFT_ADDRESS + "<br>"
+  document.getElementById("contract_state").innerHTML = contract_state_str
+}
+
+const onWalletConnected = async () => {
+  document.getElementById("account_address").textContent = accounts[0]
+
+  token_balance = await token_contract.methods.balanceOf(accounts[0]).call()
+  USER_WHITELIST_RESERVE = await nft_contract.methods.whitelistReserved(accounts[0]).call()
   USER_TOKEN_IDS = await nft_contract.methods.tokensOfOwner(accounts[0]).call()
   ERC20_TOKEN_BALANCE = await token_contract.methods.balanceOf(accounts[0]).call()
 
@@ -116,22 +152,12 @@ const onContractInitCallback = async () => {
   }
 
   var contract_state_str = ""
-    + "NFT Price: " + web3.utils.fromWei(NFT_PRICE) + "<br>"
-    + "Sale active: " + SALE_ACTIVE + "<br>"
-    + "Whitelist active: " + WHITELIST_ACTIVE + "<br>"
-    + "Claim active: " + CLAIM_ACTIVE + "<br>"
-    + "Max supply: " + MAX_SUPPLY + "<br>"
-    + "Max mint per tx: " + MAX_MINT_PER_TX + "<br>"
-    + "Base token URI: " + BASE_TOKEN_URI + "<br>"
     + "User Whitelist Reserve: " + USER_WHITELIST_RESERVE + "<br>"
-    + "Owner: " + OWNER_ADDRESS + "<br>"
-    + "Token address: " + MINTER_TOKEN_ADDRESS + "<br>"
-    + "NFT address: " + MINTER_NFT_ADDRESS + "<br>"
     + "Your tokens: " + USER_TOKEN_IDS + "<br>"
     + "Claimable amounts: " + USER_TOKEN_CLAIMABLES + "<br>"
     + "ERC20 Balance: " + web3.utils.fromWei(ERC20_TOKEN_BALANCE) + "<br>"
   
-  document.getElementById("contract_state").innerHTML = contract_state_str
+  document.getElementById("account_state").innerHTML = contract_state_str
 }
 
 
