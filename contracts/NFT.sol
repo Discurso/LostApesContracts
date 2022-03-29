@@ -63,6 +63,7 @@ contract NFTCollection is ERC721Enumerable, Ownable {
         require( _amount <= reservedAmt,            "Can't mint more than reserved" );
         require( supply + _amount <= MAX_SUPPLY,    "Can't mint more than max supply" );
         require( msg.value == price * _amount,      "Wrong amount of ETH sent" );
+        require( _amount >= 1, "Must mint at least one" );
         whitelistReserved[msg.sender] = reservedAmt - _amount;
         for(uint256 i; i < _amount; i++){
             _safeMint( msg.sender, supply + i );
@@ -77,6 +78,7 @@ contract NFTCollection is ERC721Enumerable, Ownable {
         require( balanceOf(msg.sender) + _amount <= MAX_MINT_PER_WALLET, "Max mint per wallet exceeded!");
         require( supply + _amount <= MAX_SUPPLY, "Can't mint more than max supply" );
         require( msg.value == price * _amount, "Wrong amount of ETH sent" );
+        require( _amount >= 1, "Must mint at least one" );
         for(uint256 i; i < _amount; i++){
             _safeMint( msg.sender, supply + i );
             minter.register(supply + i);
